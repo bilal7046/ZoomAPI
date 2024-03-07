@@ -1,0 +1,40 @@
+﻿@using ZoomAPI.Interfaces
+@inject IZoom Zoom;
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@{
+    @if (await Zoom.IsConnected())
+    {
+        <div class="row">
+            <div class="col-md-2">
+                <form action="/Home/DisconnectZoom" method="post">
+                    <button type="submit" class="btn btn-danger">Disconnect Zoom</button>
+                </form>
+            </div>
+            <div class="col-md-2">
+               
+                    <button type="submit" class="btn btn-success" onclick="createNewMeeting()">Zoom Meeting</button>
+                
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-2">
+                <form action="/Home/ConnectZoom" method="post">
+                    <button type="submit" class="btn btn-primary">Connect Zoom</button>
+                </form>
+            </div>
+        </div>
+    }
+
+}
+<div id="zoom"></div> 
+
+@section Scripts
+                    {
+    <script src="~/js/zoom.js"></script>
+}

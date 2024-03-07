@@ -1,0 +1,72 @@
+﻿@model Root
+<h2>Zoom Meetings</h2>
+
+<a class="btn btn-primary" onclick="createNewMeeting()">Create New Meeting</a>
+<table width="100%" class="table table-responsive">
+    <thead>
+        <tr>
+            <th>TimeZone</th>
+            <th>DateTime</th>
+            <th>Duration (Minute)</th>
+            <th>Topic</th>
+            <th>Meeting Notes</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var meeting in Model.meetings)
+        {
+            DateTime utcTime = DateTime.ParseExact(meeting.start_time, "yyyy-MM-ddTHH:mm:ssZ", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind);
+
+            // Convert to Greenwich Mean Time (GMT)
+            TimeZoneInfo gmtTimeZone = TimeZoneInfo.Utc;
+            DateTime gmtTime = TimeZoneInfo.ConvertTime(utcTime, gmtTimeZone);
+
+            <tr id="row_@meeting.id">
+                <td>@meeting.timezone</td>
+                <td>@gmtTime</td>
+                <td>@meeting.duration</td>
+                <td>@meeting.topic</td>
+                <td>@meeting.agenda</td>
+                <td>
+                    <a href="@meeting.join_url" target="_blank" class="btn btn-primary">Join</a>
+                    <a onclick="confirmDelete('@meeting.id')" class="btn btn-danger">Delete</a>
+                    <a onclick="openMeetingNotesPopup(@meeting.id)" class="btn btn-info">Add Note</a>
+                    <a class="btn btn-warning" onclick="copyMeetingLink('@meeting.join_url')">Copy Meeting Link</a>
+                </td>
+            </tr>
+
+        }
+    </tbody>
+</table>
+
+<div id="meetingNoteModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Meeting Notes</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="closePopup('meetingNoteModal')">&times;</button>
+           
+            </div>
+            <div class="modal-body">
+                <label>Add Meeting Note</label>
+               <textarea style="width:100%" id="txtmeetingNotes">
+
+               </textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="addMeetingNotes()">Save</button>
+                <button type="button" class="btn btn-default" onclick="closePopup('meetingNoteModal')">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script src="~/js/zoom.js"></script>
+}
